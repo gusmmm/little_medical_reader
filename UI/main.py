@@ -3,6 +3,12 @@ import logging
 import os
 import pdfplumber
 from typing import Any
+import sys
+from pathlib import Path
+
+# Add the parent directory to the Python path to import from file_processor
+sys.path.append(str(Path(__file__).parent.parent))
+from file_processor.pdf_processor import process_pdf_to_session_state, get_markdown_from_session
 
 
 # streamlit app configuration
@@ -67,6 +73,16 @@ def main() -> None:
         )
         if file_upload:
             st.success(f"File '{file_upload.name}' uploaded successfully!")
+            
+            # Process PDF to markdown and save to session state
+            with st.spinner("Converting PDF to markdown..."):
+                success, error_message = process_pdf_to_session_state(file_upload)
+            
+            if success:
+                st.success("PDF converted to markdown successfully!")
+            else:
+                st.error(f"Failed to process PDF: {error_message}")
+            
             # extract pages as images
             with st.spinner("Extracting pages..."):
                 images = extract_all_pages_as_images(file_upload)
@@ -93,7 +109,29 @@ def main() -> None:
                         caption="Extracted Page",
                         width=zoom_level,
                     )
-                
+    
+    # markdown content display section
+    with col2:
+        st.markdown("### Converted Markdown Content")
+        
+        # Display markdown content if available in session state
+        markdown_content = get_markdown_from_session()
+        if markdown_content:
+            # Show markdown content in an expandable container
+            with st.container(height=600, border=True):
+                st.markdown(markdown_content)
+            
+            # Add download button for the markdown content
+            st.download_button(
+                label="Download Markdown File",
+                data=markdown_content,
+                file_name=f"{st.session_state.get('original_pdf_name', 'document').replace('.pdf', '.md')}",
+                mime="text/markdown",
+                help="Download the converted markdown content"
+            )
+        else:
+            st.info("Upload a PDF file to see the converted markdown content here.")
+
 
 if __name__ == "__main__":
     main()
