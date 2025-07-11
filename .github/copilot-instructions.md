@@ -2,6 +2,7 @@
 This app will help you read your patient's notes.
 It will convert the notes content to a visual format after extracting the data.
 Always anotate the code to explain in detail what it does.
+Always add logging to the code to track the execution flow and errors.
 Change the code in small verifiable steps and implement only one feature at a time.
 
 # python code
@@ -31,5 +32,10 @@ Workflow chains using LLM and AI agents will use langchain
 # LLM and AI agents
 The app uses google genai agents. The model that will be used for testing is gemini-2.0-flash due to the quality and low price.
 Local models using ollama will be used as local offline option.
+The AI and LLM agents are in the folder /agents
+
+# logging
+The app will have a logging system to track the execution flow and errors.
+The logging will be in the folder /logs
 
 
