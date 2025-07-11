@@ -26,6 +26,11 @@ The code for the file conversion is in the folder /file_processor
 The app will have a UI built with streamlit.
 The code for the UI is in the folder /UI
 
+# pydantic models
+The app will use pydantic models to validate the data.
+Use pydantic v2 - see https://docs.pydantic.dev/latest/
+
+
 # workflow chain
 Workflow chains using LLM and AI agents will use langchain
 
