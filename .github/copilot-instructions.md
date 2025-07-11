@@ -1,2 +1,2 @@
 # general instructions for Copilot
-- always manage the python environment with uv
+- always manage the python environment and packages with uv
