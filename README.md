@@ -17,20 +17,22 @@ The current version of the app includes:
 
 ### ✅ Implemented Features
 - **PDF Upload Interface**: Upload PDF medical documents through a user-friendly Streamlit interface
-- **PDF Page Extraction**: Extract all pages from PDF files as images using pdfplumber
-- **Image Display**: View extracted pages as images in the web interface
-- **Session State Management**: Maintain extracted pages in session state for persistent viewing
-- **Responsive Layout**: Two-column layout with file upload on the left and content display
-- **Progress Indicators**: Loading spinners and success messages for user feedback
-- **Logging**: Comprehensive logging system for debugging and monitoring
+- **PDF Page Extraction**: Extract all pages from PDF files as images using pdfplumber for visual inspection
+- **PDF to Markdown Conversion**: Convert PDF content to markdown format using PyMuPDF for text extraction and processing
+- **Dual Content Display**: View both visual pages (images) and converted text content (markdown) side by side
+- **Markdown File Download**: Download the converted markdown content as a file for offline use
+- **Session State Management**: Maintain extracted pages and converted content in session state for persistent viewing
+- **File Processing Pipeline**: Complete workflow from PDF upload to markdown conversion with proper error handling
+- **Responsive Layout**: Two-column layout with file upload and images on the left, markdown content on the right
+- **Progress Indicators**: Loading spinners and success/error messages for user feedback during processing
+- **Comprehensive Logging**: Detailed logging system for debugging and monitoring PDF processing operations
 
 ### 🚧 Planned Features
-- PDF to Markdown conversion
-- Text and Markdown file processing
-- LLM integration with Google Gemini 2.0 Flash
-- Local model support with Ollama
+- Text and Markdown file processing (direct upload)
+- LLM integration with Google Gemini 2.0 Flash for content analysis
+- Local model support with Ollama for offline processing
 - AI-powered content analysis and visualization
-- Workflow chains using LangChain
+- Workflow chains using LangChain for advanced document processing
 
 ## Installation
 
@@ -55,7 +57,8 @@ uv sync
 
 This will install all required dependencies including:
 - `streamlit` - Web framework for the UI
-- `pdfplumber` - PDF processing and text extraction
+- `pdfplumber` - PDF processing and image extraction
+- `pymupdf` - PDF text extraction and markdown conversion
 
 ## Running the Application
 
@@ -81,8 +84,14 @@ streamlit run UI/main.py
 ## Usage
 
 1. **Upload a PDF**: Use the file uploader in the left column to select a PDF medical document
-2. **View Pages**: Once uploaded, the app will extract all pages as images and display them
-3. **Browse Content**: Scroll through the extracted pages to review the medical document content
+2. **Automatic Processing**: The app will automatically:
+   - Extract all pages as images for visual inspection
+   - Convert the PDF content to markdown format for text analysis
+3. **View Content**: 
+   - **Left Column**: Browse through extracted page images with adjustable zoom
+   - **Right Column**: Read the converted markdown content in a scrollable container
+4. **Download**: Use the download button to save the converted markdown file to your local machine
+5. **Session Persistence**: Your processed content remains available during your session
 
 ## Project Structure
 
@@ -91,6 +100,10 @@ little_medical_reader/
 ├── UI/
 │   ├── __init__.py
 │   └── main.py          # Streamlit app main file
+├── file_processor/
+│   ├── __init__.py
+│   └── pdf_processor.py # PDF processing and markdown conversion
+├── output/              # Generated markdown files (created automatically)
 ├── main.py              # Project entry point
 ├── pyproject.toml       # Project dependencies and metadata
 ├── uv.lock             # Dependency lock file
@@ -102,6 +115,7 @@ little_medical_reader/
 
 The app is structured to support:
 - **UI Layer**: Streamlit-based interface in the `UI/` folder
+- **Processing Layer**: PDF and document processing in the `file_processor/` folder
 - **Workflow Chains**: Future LangChain integration for AI processing
 - **Multiple Model Support**: Google Gemini 2.0 Flash for cloud processing, Ollama for local processing
 
@@ -109,7 +123,7 @@ The app is structured to support:
 
 - **Backend**: Python 3.12+
 - **UI Framework**: Streamlit
-- **PDF Processing**: pdfplumber
+- **PDF Processing**: pdfplumber (images), PyMuPDF (text extraction)
 - **Package Management**: uv
 - **Future AI Integration**: LangChain, Google Gemini, Ollama
 

@@ -4,7 +4,6 @@ It will convert the notes content to a visual format after extracting the data.
 Always anotate the code to explain in detail what it does.
 Change the code in small verifiable steps and implement only one feature at a time.
 
-
 # python code
 Always use uv to manage the project and its dependencies.
 Verify the imports and paths before implementing a feature.
@@ -15,6 +14,12 @@ The patient's notes file will be in one of these 3 formats:
 - pdf - the app will convert it to markdown
 - markdown
 - txt
+
+# file uploading and conversion
+The app will have a file upload interface to upload the patient's notes.
+The app will extract the content from the file and convert it to markdown if it is a pdf file.
+The app will display the content in a visual format.
+The code for the file conversion is in the folder /file_processor
 
 # graphical interface
 The app will have a UI built with streamlit.
