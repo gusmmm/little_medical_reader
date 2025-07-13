@@ -321,9 +321,22 @@ def display_processing_results(output_dir: str, pdf_name: str):
             image_files = list(images_dir.glob("*.png")) + list(images_dir.glob("*.jpg")) + list(images_dir.glob("*.jpeg"))
             
             if image_files:
-                # Organize images by type and sort alphabetically
-                page_images = sorted([f for f in image_files if "page_" in f.name], key=lambda x: x.name)
-                figure_images = sorted([f for f in image_files if "figure_" in f.name], key=lambda x: x.name)
+                # Helper function to extract page/figure numbers for proper numerical sorting
+                def extract_page_number(filename):
+                    """Extract page number from filename like 'document_page_12.png' -> 12"""
+                    import re
+                    match = re.search(r'page_(\d+)', filename)
+                    return int(match.group(1)) if match else 0
+                
+                def extract_figure_number(filename):
+                    """Extract figure number from filename like 'document_figure_3.png' -> 3"""
+                    import re
+                    match = re.search(r'figure_(\d+)', filename)
+                    return int(match.group(1)) if match else 0
+                
+                # Organize images by type and sort numerically by page/figure number
+                page_images = sorted([f for f in image_files if "page_" in f.name], key=lambda x: extract_page_number(x.name))
+                figure_images = sorted([f for f in image_files if "figure_" in f.name], key=lambda x: extract_figure_number(x.name))
                 other_images = sorted([f for f in image_files if "page_" not in f.name and "figure_" not in f.name], key=lambda x: x.name)
                 
                 # Display page images first
@@ -617,8 +630,15 @@ def display_processing_results(output_dir: str, pdf_name: str):
             table_files = list(tables_dir.glob("*.png")) + list(tables_dir.glob("*.jpg")) + list(tables_dir.glob("*.jpeg"))
             
             if table_files:
-                # Sort table files alphabetically
-                table_files = sorted(table_files, key=lambda x: x.name)
+                # Helper function to extract table numbers for proper numerical sorting
+                def extract_table_number(filename):
+                    """Extract table number from filename like 'document_table_3.png' -> 3"""
+                    import re
+                    match = re.search(r'table_(\d+)', filename)
+                    return int(match.group(1)) if match else 0
+                
+                # Sort table files numerically by table number
+                table_files = sorted(table_files, key=lambda x: extract_table_number(x.name))
                 st.markdown(f"*{len(table_files)} tables extracted*")
                 
                 # Display tables in pairs (2 per row) with interaction
