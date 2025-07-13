@@ -182,6 +182,84 @@ def process_pdf_with_advanced_processor(pdf_path: str) -> Optional[str]:
         logger.error(f"Error processing PDF with advanced processor: {e}")
         return None
 
+def check_existing_output(pdf_path: str) -> Optional[str]:
+    """
+    Check if output directory already exists for the given PDF file.
+    
+    Args:
+        pdf_path: Path to the PDF file
+        
+    Returns:
+        Path to existing output directory if it exists, None otherwise
+    """
+    pdf_name = Path(pdf_path).stem
+    output_dir = Path("output") / pdf_name
+    
+    if output_dir.exists() and output_dir.is_dir():
+        # Check if it contains expected files (at least one markdown file)
+        md_files = list(output_dir.glob("*.md"))
+        if md_files:
+            logger.info(f"Found existing output directory: {output_dir}")
+            return str(output_dir)
+    
+    return None
+
+def get_output_summary(output_dir: str) -> dict:
+    """
+    Get summary statistics of an output directory.
+    
+    Args:
+        output_dir: Path to the output directory
+        
+    Returns:
+        Dictionary with file counts and sizes
+    """
+    output_path = Path(output_dir)
+    
+    summary = {
+        "md_files": 0,
+        "images": 0,
+        "tables": 0,
+        "total_files": 0,
+        "total_size_mb": 0.0,
+        "created_time": None
+    }
+    
+    if not output_path.exists():
+        return summary
+    
+    # Count markdown files
+    md_files = list(output_path.glob("*.md"))
+    summary["md_files"] = len(md_files)
+    
+    # Count images
+    images_dir = output_path / "images"
+    if images_dir.exists():
+        image_files = list(images_dir.glob("*.png")) + list(images_dir.glob("*.jpg")) + list(images_dir.glob("*.jpeg"))
+        summary["images"] = len(image_files)
+    
+    # Count tables
+    tables_dir = output_path / "tables"
+    if tables_dir.exists():
+        table_files = list(tables_dir.glob("*.png")) + list(tables_dir.glob("*.jpg")) + list(tables_dir.glob("*.jpeg"))
+        summary["tables"] = len(table_files)
+    
+    # Total files and size
+    all_files = list(output_path.rglob('*'))
+    summary["total_files"] = len([f for f in all_files if f.is_file()])
+    total_size = sum(f.stat().st_size for f in all_files if f.is_file())
+    summary["total_size_mb"] = total_size / (1024 * 1024)
+    
+    # Get creation time of the directory
+    try:
+        import datetime
+        creation_time = output_path.stat().st_mtime
+        summary["created_time"] = datetime.datetime.fromtimestamp(creation_time).strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        summary["created_time"] = "Unknown"
+    
+    return summary
+
 def display_processing_results(output_dir: str, pdf_name: str):
     """
     Display the processing results in organized tabs.
@@ -463,36 +541,134 @@ def main() -> None:
             
             st.info(f"📁 Ready to process: `{Path(pdf_path).name}`")
             
-            # Processing button
-            if st.button("🚀 Convert to Markdown with Docling", type="primary", help="Process PDF using advanced Docling processor"):
-                with st.spinner("🔄 Processing PDF with advanced Docling processor..."):
-                    output_dir = process_pdf_with_advanced_processor(pdf_path)
+            # Check if output already exists
+            existing_output = check_existing_output(pdf_path)
+            
+            if existing_output:
+                # Show existing output information
+                st.warning("⚠️ Previous processing results found!")
                 
-                if output_dir:
-                    st.success("✅ PDF processing completed successfully!")
-                    st.session_state["processing_output_dir"] = output_dir
-                    st.session_state["processing_completed"] = True
+                # Get summary of existing output
+                output_summary = get_output_summary(existing_output)
+                
+                with st.expander("📊 Existing Processing Results", expanded=True):
+                    col1, col2, col3, col4 = st.columns(4)
+                    with col1:
+                        st.metric("📄 Markdown Files", output_summary["md_files"])
+                    with col2:
+                        st.metric("🖼️ Images", output_summary["images"])
+                    with col3:
+                        st.metric("📊 Tables", output_summary["tables"])
+                    with col4:
+                        st.metric("📁 Total Files", output_summary["total_files"])
                     
-                    # Show processing summary
-                    with st.expander("📊 Processing Summary", expanded=True):
-                        output_path = Path(output_dir)
+                    st.markdown(f"**📂 Output Directory:** `{existing_output}`")
+                    st.markdown(f"**📅 Created:** {output_summary['created_time']}")
+                    st.markdown(f"**💾 Total Size:** {output_summary['total_size_mb']:.2f} MB")
+                
+                # Provide user options
+                st.markdown("### 🤔 What would you like to do?")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    view_existing = st.button(
+                        "👀 View Existing Results",
+                        type="primary",
+                        key="view_existing",
+                        help="Display the previously processed results",
+                        use_container_width=True
+                    )
+                
+                with col2:
+                    reprocess = st.button(
+                        "🔄 Process Again",
+                        key="reprocess",
+                        help="Delete existing results and process the PDF again",
+                        use_container_width=True
+                    )
+                
+                if view_existing:
+                    st.success("✅ Loading existing processing results!")
+                    st.session_state["processing_output_dir"] = existing_output
+                    st.session_state["processing_completed"] = True
+                    st.rerun()
+                
+                elif reprocess:
+                    # Confirm deletion and reprocess
+                    st.warning("🗑️ This will delete the existing results and reprocess the PDF.")
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        confirm_delete = st.button(
+                            "✅ Confirm Reprocess",
+                            key="confirm_reprocess",
+                            help="Confirm deletion and start reprocessing"
+                        )
+                    with col2:
+                        cancel_delete = st.button(
+                            "❌ Cancel",
+                            key="cancel_reprocess",
+                            help="Cancel the reprocessing"
+                        )
+                    
+                    if confirm_delete:
+                        try:
+                            # Delete existing output directory
+                            import shutil
+                            shutil.rmtree(existing_output)
+                            logger.info(f"Deleted existing output directory: {existing_output}")
+                            
+                            # Process the PDF
+                            with st.spinner("🔄 Processing PDF with advanced Docling processor..."):
+                                output_dir = process_pdf_with_advanced_processor(pdf_path)
+                            
+                            if output_dir:
+                                st.success("✅ PDF reprocessing completed successfully!")
+                                st.session_state["processing_output_dir"] = output_dir
+                                st.session_state["processing_completed"] = True
+                                st.rerun()
+                            else:
+                                st.error("❌ PDF reprocessing failed. Please check the logs for details.")
+                                
+                        except Exception as e:
+                            st.error(f"❌ Error during reprocessing: {e}")
+                            logger.error(f"Error during reprocessing: {e}")
+                    
+                    elif cancel_delete:
+                        st.info("Reprocessing cancelled.")
+                        st.rerun()
+            
+            else:
+                # No existing output, show normal processing button
+                if st.button("🚀 Convert to Markdown with Docling", type="primary", help="Process PDF using advanced Docling processor"):
+                    with st.spinner("🔄 Processing PDF with advanced Docling processor..."):
+                        output_dir = process_pdf_with_advanced_processor(pdf_path)
+                    
+                    if output_dir:
+                        st.success("✅ PDF processing completed successfully!")
+                        st.session_state["processing_output_dir"] = output_dir
+                        st.session_state["processing_completed"] = True
                         
-                        # Count generated files
-                        md_files = list(output_path.glob("*.md"))
-                        image_files = list((output_path / "images").glob("*")) if (output_path / "images").exists() else []
-                        table_files = list((output_path / "tables").glob("*")) if (output_path / "tables").exists() else []
-                        
-                        col1, col2, col3 = st.columns(3)
-                        with col1:
-                            st.metric("📄 Markdown Files", len(md_files))
-                        with col2:
-                            st.metric("🖼️ Images Extracted", len(image_files))
-                        with col3:
-                            st.metric("📊 Tables Extracted", len(table_files))
-                        
-                        st.markdown(f"**Output Directory:** `{output_dir}`")
-                else:
-                    st.error("❌ PDF processing failed. Please check the logs for details.")
+                        # Show processing summary
+                        with st.expander("📊 Processing Summary", expanded=True):
+                            output_path = Path(output_dir)
+                            
+                            # Count generated files
+                            md_files = list(output_path.glob("*.md"))
+                            image_files = list((output_path / "images").glob("*")) if (output_path / "images").exists() else []
+                            table_files = list((output_path / "tables").glob("*")) if (output_path / "tables").exists() else []
+                            
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("📄 Markdown Files", len(md_files))
+                            with col2:
+                                st.metric("🖼️ Images Extracted", len(image_files))
+                            with col3:
+                                st.metric("📊 Tables Extracted", len(table_files))
+                            
+                            st.markdown(f"**Output Directory:** `{output_dir}`")
+                    else:
+                        st.error("❌ PDF processing failed. Please check the logs for details.")
             
             # Display processing results if available
             if st.session_state.get("processing_completed", False) and "processing_output_dir" in st.session_state:
@@ -504,6 +680,39 @@ def main() -> None:
         
         else:
             st.info("📁 Upload a PDF file to begin processing.")
+            
+            # Show existing processed files in output directory
+            output_base_dir = Path("output")
+            if output_base_dir.exists():
+                existing_folders = [d for d in output_base_dir.iterdir() if d.is_dir() and d.name != "docling_md"]
+                
+                if existing_folders:
+                    st.markdown("### 📚 Previously Processed Files")
+                    st.markdown("*You can also view results from previously processed PDFs:*")
+                    
+                    for folder in existing_folders[:5]:  # Show first 5 folders
+                        folder_summary = get_output_summary(str(folder))
+                        
+                        with st.expander(f"📁 {folder.name}", expanded=False):
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("MD Files", folder_summary["md_files"])
+                            with col2:
+                                st.metric("Images", folder_summary["images"])
+                            with col3:
+                                st.metric("Tables", folder_summary["tables"])
+                            
+                            st.markdown(f"**Created:** {folder_summary['created_time']}")
+                            st.markdown(f"**Size:** {folder_summary['total_size_mb']:.2f} MB")
+                            
+                            if st.button(f"👀 View Results", key=f"view_{folder.name}", help=f"View processing results for {folder.name}"):
+                                st.session_state["processing_output_dir"] = str(folder)
+                                st.session_state["processing_completed"] = True
+                                st.session_state["current_pdf_name"] = folder.name
+                                st.rerun()
+                    
+                    if len(existing_folders) > 5:
+                        st.info(f"Showing first 5 of {len(existing_folders)} processed files.")
             
             # Show example of expected output
             st.markdown("### 🎯 What to Expect")
