@@ -321,33 +321,287 @@ def display_processing_results(output_dir: str, pdf_name: str):
             image_files = list(images_dir.glob("*.png")) + list(images_dir.glob("*.jpg")) + list(images_dir.glob("*.jpeg"))
             
             if image_files:
-                # Organize images by type
-                page_images = [f for f in image_files if "page_" in f.name]
-                figure_images = [f for f in image_files if "figure_" in f.name]
+                # Organize images by type and sort alphabetically
+                page_images = sorted([f for f in image_files if "page_" in f.name], key=lambda x: x.name)
+                figure_images = sorted([f for f in image_files if "figure_" in f.name], key=lambda x: x.name)
+                other_images = sorted([f for f in image_files if "page_" not in f.name and "figure_" not in f.name], key=lambda x: x.name)
                 
-                # Display page images
+                # Display page images first
                 if page_images:
                     st.markdown("#### 📄 Page Images")
-                    cols = st.columns(3)
-                    for i, img_file in enumerate(page_images[:9]):  # Show first 9 page images
-                        with cols[i % 3]:
-                            try:
-                                st.image(str(img_file), caption=img_file.name, use_container_width=True)
-                            except Exception as e:
-                                st.error(f"Error displaying {img_file.name}: {e}")
+                    st.markdown(f"*{len(page_images)} page images extracted*")
                     
-                    if len(page_images) > 9:
-                        st.info(f"Showing first 9 of {len(page_images)} page images.")
+                    # Create pagination for page images (2 per row)
+                    images_per_page = 6  # 3 rows of 2 images each
+                    total_pages = (len(page_images) + images_per_page - 1) // images_per_page
+                    
+                    if total_pages > 1:
+                        page_col1, page_col2, page_col3 = st.columns([1, 2, 1])
+                        with page_col2:
+                            page_num = st.selectbox(
+                                "Select page group",
+                                range(1, total_pages + 1),
+                                format_func=lambda x: f"Pages {(x-1)*images_per_page + 1}-{min(x*images_per_page, len(page_images))}",
+                                key="page_images_pagination"
+                            )
+                    else:
+                        page_num = 1
+                    
+                    # Calculate start and end indices
+                    start_idx = (page_num - 1) * images_per_page
+                    end_idx = min(start_idx + images_per_page, len(page_images))
+                    current_page_images = page_images[start_idx:end_idx]
+                    
+                    # Display images in pairs (2 per row)
+                    for i in range(0, len(current_page_images), 2):
+                        col1, col2 = st.columns(2)
+                        
+                        # First image
+                        img_file1 = current_page_images[i]
+                        with col1:
+                            try:
+                                # Create container for image and buttons
+                                with st.container(border=True):
+                                    st.markdown(f"**{img_file1.name}**")
+                                    st.image(str(img_file1), caption=img_file1.name, use_container_width=True)
+                                    
+                                    # Buttons for image actions
+                                    btn_col1, btn_col2 = st.columns(2)
+                                    with btn_col1:
+                                        # View full size button
+                                        if st.button("🔍 Full Size", key=f"fullsize_page_{img_file1.name}", help="View image in full size"):
+                                            with st.expander(f"🖼️ Full Size: {img_file1.name}", expanded=True):
+                                                st.image(str(img_file1), caption=img_file1.name)
+                                    
+                                    with btn_col2:
+                                        # Download button
+                                        with open(img_file1, 'rb') as file:
+                                            st.download_button(
+                                                label="💾 Save",
+                                                data=file.read(),
+                                                file_name=img_file1.name,
+                                                mime="image/png",
+                                                key=f"download_page_{img_file1.name}",
+                                                help="Download this image"
+                                            )
+                            except Exception as e:
+                                st.error(f"Error displaying {img_file1.name}: {e}")
+                        
+                        # Second image (if exists)
+                        if i + 1 < len(current_page_images):
+                            img_file2 = current_page_images[i + 1]
+                            with col2:
+                                try:
+                                    # Create container for image and buttons
+                                    with st.container(border=True):
+                                        st.markdown(f"**{img_file2.name}**")
+                                        st.image(str(img_file2), caption=img_file2.name, use_container_width=True)
+                                        
+                                        # Buttons for image actions
+                                        btn_col1, btn_col2 = st.columns(2)
+                                        with btn_col1:
+                                            # View full size button
+                                            if st.button("🔍 Full Size", key=f"fullsize_page_{img_file2.name}", help="View image in full size"):
+                                                with st.expander(f"🖼️ Full Size: {img_file2.name}", expanded=True):
+                                                    st.image(str(img_file2), caption=img_file2.name)
+                                        
+                                        with btn_col2:
+                                            # Download button
+                                            with open(img_file2, 'rb') as file:
+                                                st.download_button(
+                                                    label="💾 Save",
+                                                    data=file.read(),
+                                                    file_name=img_file2.name,
+                                                    mime="image/png",
+                                                    key=f"download_page_{img_file2.name}",
+                                                    help="Download this image"
+                                                )
+                                except Exception as e:
+                                    st.error(f"Error displaying {img_file2.name}: {e}")
                 
                 # Display figure images
                 if figure_images:
+                    st.markdown("---")
                     st.markdown("#### 🖼️ Extracted Figures")
-                    for img_file in figure_images:
-                        st.markdown(f"**{img_file.name}**")
-                        try:
-                            st.image(str(img_file), caption=img_file.name, width=600)
-                        except Exception as e:
-                            st.error(f"Error displaying {img_file.name}: {e}")
+                    st.markdown(f"*{len(figure_images)} figures extracted*")
+                    
+                    # Display figures in a more compact grid (2 per row, smaller size)
+                    for i in range(0, len(figure_images), 2):
+                        col1, col2 = st.columns(2)
+                        
+                        # First figure
+                        img_file1 = figure_images[i]
+                        with col1:
+                            try:
+                                with st.container(border=True):
+                                    st.markdown(f"**{img_file1.name}**")
+                                    # Smaller width for figures to see them more easily
+                                    st.image(str(img_file1), caption=img_file1.name, width=300)
+                                    
+                                    # Buttons for image actions
+                                    btn_col1, btn_col2 = st.columns(2)
+                                    with btn_col1:
+                                        # View full size button
+                                        if st.button("🔍 Full Size", key=f"fullsize_fig_{img_file1.name}", help="View figure in full size"):
+                                            with st.expander(f"🖼️ Full Size: {img_file1.name}", expanded=True):
+                                                st.image(str(img_file1), caption=img_file1.name)
+                                    
+                                    with btn_col2:
+                                        # Download button
+                                        with open(img_file1, 'rb') as file:
+                                            st.download_button(
+                                                label="💾 Save",
+                                                data=file.read(),
+                                                file_name=img_file1.name,
+                                                mime="image/png",
+                                                key=f"download_fig_{img_file1.name}",
+                                                help="Download this figure"
+                                            )
+                            except Exception as e:
+                                st.error(f"Error displaying {img_file1.name}: {e}")
+                        
+                        # Second figure (if exists)
+                        if i + 1 < len(figure_images):
+                            img_file2 = figure_images[i + 1]
+                            with col2:
+                                try:
+                                    with st.container(border=True):
+                                        st.markdown(f"**{img_file2.name}**")
+                                        # Smaller width for figures to see them more easily
+                                        st.image(str(img_file2), caption=img_file2.name, width=300)
+                                        
+                                        # Buttons for image actions
+                                        btn_col1, btn_col2 = st.columns(2)
+                                        with btn_col1:
+                                            # View full size button
+                                            if st.button("🔍 Full Size", key=f"fullsize_fig_{img_file2.name}", help="View figure in full size"):
+                                                with st.expander(f"🖼️ Full Size: {img_file2.name}", expanded=True):
+                                                    st.image(str(img_file2), caption=img_file2.name)
+                                        
+                                        with btn_col2:
+                                            # Download button
+                                            with open(img_file2, 'rb') as file:
+                                                st.download_button(
+                                                    label="💾 Save",
+                                                    data=file.read(),
+                                                    file_name=img_file2.name,
+                                                    mime="image/png",
+                                                    key=f"download_fig_{img_file2.name}",
+                                                    help="Download this figure"
+                                                )
+                                except Exception as e:
+                                    st.error(f"Error displaying {img_file2.name}: {e}")
+                
+                # Display other images if any
+                if other_images:
+                    st.markdown("---")
+                    st.markdown("#### 📎 Other Images")
+                    st.markdown(f"*{len(other_images)} other images found*")
+                    
+                    for i in range(0, len(other_images), 2):
+                        col1, col2 = st.columns(2)
+                        
+                        # First image
+                        img_file1 = other_images[i]
+                        with col1:
+                            try:
+                                with st.container(border=True):
+                                    st.markdown(f"**{img_file1.name}**")
+                                    st.image(str(img_file1), caption=img_file1.name, width=300)
+                                    
+                                    # Buttons for image actions
+                                    btn_col1, btn_col2 = st.columns(2)
+                                    with btn_col1:
+                                        # View full size button
+                                        if st.button("🔍 Full Size", key=f"fullsize_other_{img_file1.name}", help="View image in full size"):
+                                            with st.expander(f"🖼️ Full Size: {img_file1.name}", expanded=True):
+                                                st.image(str(img_file1), caption=img_file1.name)
+                                    
+                                    with btn_col2:
+                                        # Download button
+                                        with open(img_file1, 'rb') as file:
+                                            st.download_button(
+                                                label="💾 Save",
+                                                data=file.read(),
+                                                file_name=img_file1.name,
+                                                mime="image/png",
+                                                key=f"download_other_{img_file1.name}",
+                                                help="Download this image"
+                                            )
+                            except Exception as e:
+                                st.error(f"Error displaying {img_file1.name}: {e}")
+                        
+                        # Second image (if exists)
+                        if i + 1 < len(other_images):
+                            img_file2 = other_images[i + 1]
+                            with col2:
+                                try:
+                                    with st.container(border=True):
+                                        st.markdown(f"**{img_file2.name}**")
+                                        st.image(str(img_file2), caption=img_file2.name, width=300)
+                                        
+                                        # Buttons for image actions
+                                        btn_col1, btn_col2 = st.columns(2)
+                                        with btn_col1:
+                                            # View full size button
+                                            if st.button("🔍 Full Size", key=f"fullsize_other_{img_file2.name}", help="View image in full size"):
+                                                with st.expander(f"🖼️ Full Size: {img_file2.name}", expanded=True):
+                                                    st.image(str(img_file2), caption=img_file2.name)
+                                        
+                                        with btn_col2:
+                                            # Download button
+                                            with open(img_file2, 'rb') as file:
+                                                st.download_button(
+                                                    label="💾 Save",
+                                                    data=file.read(),
+                                                    file_name=img_file2.name,
+                                                    mime="image/png",
+                                                    key=f"download_other_{img_file2.name}",
+                                                    help="Download this image"
+                                                )
+                                except Exception as e:
+                                    st.error(f"Error displaying {img_file2.name}: {e}")
+                
+                # Summary at the bottom
+                st.markdown("---")
+                total_images = len(page_images) + len(figure_images) + len(other_images)
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("📄 Page Images", len(page_images))
+                with col2:
+                    st.metric("🖼️ Figure Images", len(figure_images))
+                with col3:
+                    st.metric("📎 Other Images", len(other_images))
+                with col4:
+                    st.metric("📊 Total Images", total_images)
+                    
+                # Bulk download option
+                if st.button("📦 Download All Images (ZIP)", help="Download all extracted images as a ZIP file"):
+                    try:
+                        import zipfile
+                        import tempfile
+                        
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
+                            with zipfile.ZipFile(tmp_file.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                                for img_file in image_files:
+                                    zipf.write(img_file, img_file.name)
+                            
+                            with open(tmp_file.name, 'rb') as f:
+                                zip_data = f.read()
+                            
+                            st.download_button(
+                                label="📥 Download Images ZIP",
+                                data=zip_data,
+                                file_name=f"{pdf_name}_images.zip",
+                                mime="application/zip",
+                                key="download_all_images"
+                            )
+                            
+                            os.unlink(tmp_file.name)
+                            
+                    except Exception as e:
+                        st.error(f"Error creating images ZIP file: {e}")
+                        
             else:
                 st.info("No image files found in the images directory.")
         else:
@@ -363,12 +617,108 @@ def display_processing_results(output_dir: str, pdf_name: str):
             table_files = list(tables_dir.glob("*.png")) + list(tables_dir.glob("*.jpg")) + list(tables_dir.glob("*.jpeg"))
             
             if table_files:
-                for table_file in table_files:
-                    st.markdown(f"**{table_file.name}**")
+                # Sort table files alphabetically
+                table_files = sorted(table_files, key=lambda x: x.name)
+                st.markdown(f"*{len(table_files)} tables extracted*")
+                
+                # Display tables in pairs (2 per row) with interaction
+                for i in range(0, len(table_files), 2):
+                    col1, col2 = st.columns(2)
+                    
+                    # First table
+                    table_file1 = table_files[i]
+                    with col1:
+                        try:
+                            with st.container(border=True):
+                                st.markdown(f"**{table_file1.name}**")
+                                # Medium size for tables for better readability
+                                st.image(str(table_file1), caption=table_file1.name, width=400)
+                                
+                                # Buttons for table actions
+                                btn_col1, btn_col2 = st.columns(2)
+                                with btn_col1:
+                                    # View full size button
+                                    if st.button("🔍 Full Size", key=f"fullsize_table_{table_file1.name}", help="View table in full size"):
+                                        with st.expander(f"📊 Full Size: {table_file1.name}", expanded=True):
+                                            st.image(str(table_file1), caption=table_file1.name)
+                                
+                                with btn_col2:
+                                    # Download button
+                                    with open(table_file1, 'rb') as file:
+                                        st.download_button(
+                                            label="💾 Save",
+                                            data=file.read(),
+                                            file_name=table_file1.name,
+                                            mime="image/png",
+                                            key=f"download_table_{table_file1.name}",
+                                            help="Download this table"
+                                        )
+                        except Exception as e:
+                            st.error(f"Error displaying {table_file1.name}: {e}")
+                    
+                    # Second table (if exists)
+                    if i + 1 < len(table_files):
+                        table_file2 = table_files[i + 1]
+                        with col2:
+                            try:
+                                with st.container(border=True):
+                                    st.markdown(f"**{table_file2.name}**")
+                                    # Medium size for tables for better readability
+                                    st.image(str(table_file2), caption=table_file2.name, width=400)
+                                    
+                                    # Buttons for table actions
+                                    btn_col1, btn_col2 = st.columns(2)
+                                    with btn_col1:
+                                        # View full size button
+                                        if st.button("🔍 Full Size", key=f"fullsize_table_{table_file2.name}", help="View table in full size"):
+                                            with st.expander(f"📊 Full Size: {table_file2.name}", expanded=True):
+                                                st.image(str(table_file2), caption=table_file2.name)
+                                    
+                                    with btn_col2:
+                                        # Download button
+                                        with open(table_file2, 'rb') as file:
+                                            st.download_button(
+                                                label="💾 Save",
+                                                data=file.read(),
+                                                file_name=table_file2.name,
+                                                mime="image/png",
+                                                key=f"download_table_{table_file2.name}",
+                                                help="Download this table"
+                                            )
+                            except Exception as e:
+                                st.error(f"Error displaying {table_file2.name}: {e}")
+                
+                # Summary and bulk download
+                st.markdown("---")
+                st.metric("📊 Total Tables", len(table_files))
+                
+                # Bulk download option for tables
+                if st.button("📦 Download All Tables (ZIP)", help="Download all extracted tables as a ZIP file"):
                     try:
-                        st.image(str(table_file), caption=table_file.name, width=800)
+                        import zipfile
+                        import tempfile
+                        
+                        with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
+                            with zipfile.ZipFile(tmp_file.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                                for table_file in table_files:
+                                    zipf.write(table_file, table_file.name)
+                            
+                            with open(tmp_file.name, 'rb') as f:
+                                zip_data = f.read()
+                            
+                            st.download_button(
+                                label="📥 Download Tables ZIP",
+                                data=zip_data,
+                                file_name=f"{pdf_name}_tables.zip",
+                                mime="application/zip",
+                                key="download_all_tables"
+                            )
+                            
+                            os.unlink(tmp_file.name)
+                            
                     except Exception as e:
-                        st.error(f"Error displaying {table_file.name}: {e}")
+                        st.error(f"Error creating tables ZIP file: {e}")
+                        
             else:
                 st.info("No table files found in the tables directory.")
         else:
