@@ -43,4 +43,15 @@ The AI and LLM agents are in the folder /agents
 The app will have a logging system to track the execution flow and errors.
 The logging will be in the folder /logs
 
+# dealing with markdown files containing medical and scietific content
+The app will use markdown files containing medical and scientific journals and texts.
+If the text contains a medical journal articles, use a scientific methodology approach and structure the contentm using sections and subsections, example:
+- Introduction
+- Methods
+- Results
+- Discussion
+- Conclusion   
+- References
+
+
 
