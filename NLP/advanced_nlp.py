@@ -12,6 +12,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import re
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -231,6 +232,9 @@ if __name__ == '__main__':
         
         # Save the results to a JSON file (excluding the full processed text for brevity)
         output_data = {k: v for k, v in results.items() if k != 'processed_text'}
+        # Add timestamp to the output data
+        output_data["timestamp_created"] = datetime.now().isoformat()
+        
         logging.info(f"Saving analysis results to {output_json_path}")
         with open(output_json_path, 'w', encoding='utf-8') as f:
             json.dump(output_data, f, indent=4)

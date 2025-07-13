@@ -578,8 +578,9 @@ def save_nlp_analysis_results(analysis_result: MedicalNLPAnalysis, original_file
         analysis_filename = f"{base_name}_nlp_analysis.json"
         analysis_path = output_dir / analysis_filename
         
-        # Convert to JSON-serializable format
+        # Convert to JSON-serializable format and add timestamp
         analysis_data = analysis_result.model_dump()
+        analysis_data["timestamp_created"] = datetime.datetime.now().isoformat()
         
         # Write analysis to JSON file with pretty formatting
         with open(analysis_path, 'w', encoding='utf-8') as f:

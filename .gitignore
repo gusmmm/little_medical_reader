@@ -91,6 +91,7 @@ tmp/
 # uv.lock
 
 # Output directories
+input/
 output/
 outputs/
 results/

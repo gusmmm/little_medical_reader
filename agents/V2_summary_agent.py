@@ -236,8 +236,9 @@ def save_analysis_results(analysis: ArticleAnalysis, output_folder: str) -> Opti
         analysis_filename = f"{folder_name}_article_analysis.json"
         analysis_path = folder_path / analysis_filename
         
-        # Convert Pydantic model to dict and save as JSON
+        # Convert Pydantic model to dict and add timestamp
         analysis_dict = analysis.model_dump()
+        analysis_dict["timestamp_created"] = datetime.now().isoformat()
         
         with open(analysis_path, 'w', encoding='utf-8') as f:
             json.dump(analysis_dict, f, indent=2, ensure_ascii=False)

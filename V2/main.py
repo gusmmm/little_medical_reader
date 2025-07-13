@@ -6,6 +6,11 @@ from typing import Any, Optional
 import sys
 from pathlib import Path
 import shutil
+import re
+import tempfile
+import zipfile
+import datetime
+import json
 
 # Configure logging BEFORE any other operations to ensure logger is available
 logging.basicConfig(
@@ -33,6 +38,13 @@ try:
 except ImportError as e:
     logger.error(f"✗ Failed to import advanced PDF processor: {e}")
     st.error("Failed to import advanced PDF processing modules. Please check your installation.")
+
+try:
+    from agents.V2_summary_agent import process_medical_article_v2, ArticleAnalysis
+    logger.info("✓ V2 Summary Agent imported successfully")
+except ImportError as e:
+    logger.error(f"✗ Failed to import V2 Summary Agent: {e}")
+    st.error("Failed to import V2 Summary Agent. Please check your installation.")
 
 # use pdfplumber for extracting the pdf pages as images
 @st.cache_data
@@ -275,7 +287,7 @@ def display_processing_results(output_dir: str, pdf_name: str):
         return
     
     # Create tabs for different content types
-    tab1, tab2, tab3, tab4 = st.tabs(["📄 Markdown Files", "🖼️ Extracted Images", "📊 Tables", "📁 All Files"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📄 Markdown Files", "🖼️ Extracted Images", "📊 Tables", "🤖 AI Summary", "📁 All Files"])
     
     with tab1:
         st.markdown("### 📄 Generated Markdown Files")
@@ -745,6 +757,52 @@ def display_processing_results(output_dir: str, pdf_name: str):
             st.info("No tables directory found.")
     
     with tab4:
+        st.markdown("### 🤖 AI-Powered Article Analysis")
+        
+        # Check if analysis already exists in session state
+        analysis_key = f"ai_analysis_{pdf_name}"
+        
+        if analysis_key in st.session_state:
+            # Display existing analysis
+            analysis = st.session_state[analysis_key]
+            display_ai_analysis(analysis, output_dir, pdf_name)
+        else:
+            # Check if analysis file already exists
+            analysis_file = Path(output_dir) / f"{pdf_name}_article_analysis.json"
+            
+            if analysis_file.exists():
+                st.info("🔍 Existing AI analysis found!")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("📂 Load Existing Analysis", help="Load the previously generated AI analysis"):
+                        try:
+                            with open(analysis_file, 'r', encoding='utf-8') as f:
+                                analysis_data = json.load(f)
+                            
+                            # Convert to ArticleAnalysis object for consistency
+                            from agents.V2_summary_agent import ArticleAnalysis, CitationInfo
+                            analysis = ArticleAnalysis(**analysis_data)
+                            
+                            # Store in session state
+                            st.session_state[analysis_key] = analysis
+                            st.success("✅ Analysis loaded successfully!")
+                            st.rerun()
+                            
+                        except Exception as e:
+                            st.error(f"Error loading existing analysis: {e}")
+                
+                with col2:
+                    if st.button("🔄 Generate New Analysis", help="Generate a fresh AI analysis"):
+                        generate_new_analysis(output_dir, pdf_name, analysis_key)
+            else:
+                # No existing analysis
+                st.info("🤖 Ready to generate AI-powered analysis of this medical article!")
+                
+                if st.button("🚀 Generate AI Analysis", help="Analyze the article with AI to extract key insights", type="primary"):
+                    generate_new_analysis(output_dir, pdf_name, analysis_key)
+    
+    with tab5:
         st.markdown("### 📁 All Generated Files")
         
         # Show directory structure
@@ -807,6 +865,147 @@ def display_processing_results(output_dir: str, pdf_name: str):
             
             st.metric("Total Files", total_files)
             st.metric("Total Size", f"{size_mb:.2f} MB")
+
+def display_ai_analysis(analysis: ArticleAnalysis, output_dir: str, pdf_name: str):
+    """
+    Display the AI analysis in a beautiful and organized format.
+    
+    Args:
+        analysis: The ArticleAnalysis object from the V2 summary agent.
+        output_dir: The output directory for saving the analysis.
+        pdf_name: The name of the PDF file.
+    """
+    st.markdown("#### 🔬 Analysis Results")
+    
+    # Display Citation Information
+    st.markdown(f"**Title:** {analysis.citation_info.title}")
+    if analysis.citation_info.first_author:
+        authors_text = analysis.citation_info.first_author
+        if analysis.citation_info.second_author:
+            authors_text += f", {analysis.citation_info.second_author}"
+        st.markdown(f"**Authors:** {authors_text}")
+    if analysis.citation_info.journal_name:
+        st.markdown(f"**Journal:** {analysis.citation_info.journal_name}")
+    if analysis.citation_info.publication_date:
+        st.markdown(f"**Publication Date:** {analysis.citation_info.publication_date}")
+    st.markdown("---")
+    
+    # Key sections in tabs for better organization
+    summary_tab, findings_tab, methods_tab, discussion_tab = st.tabs(
+        ["📝 Summary & Keywords", "🔬 Methodology & Results", "� Conclusions", "💬 Discussion"]
+    )
+    
+    with summary_tab:
+        st.markdown("##### Abstract Summary")
+        st.markdown(analysis.abstract_summary)
+        
+        st.markdown("##### Keywords")
+        if analysis.abstract_keywords:
+            keywords_text = ", ".join(analysis.abstract_keywords)
+            st.info(f"🔖 {keywords_text}")
+
+    with findings_tab:
+        st.markdown("##### 🧪 Methodology")
+        st.markdown(analysis.methodology)
+        
+        st.markdown("##### 📊 Main Results")
+        st.markdown(analysis.main_results)
+
+    with methods_tab:
+        st.markdown("##### 🎯 Main Conclusions")
+        st.markdown(analysis.main_conclusions)
+        
+        st.markdown("##### ❓ Questions Raised")
+        if analysis.questions_raised:
+            for question in analysis.questions_raised:
+                st.markdown(f"- {question}")
+        
+        st.markdown("##### � Curiosities")
+        if analysis.curiosities:
+            for curiosity in analysis.curiosities:
+                st.markdown(f"- {curiosity}")
+
+    with discussion_tab:
+        st.markdown("##### � Discussion Points")
+        if analysis.discussion_points:
+            if "good_qualities" in analysis.discussion_points:
+                st.markdown("**✅ Strengths:**")
+                for quality in analysis.discussion_points["good_qualities"]:
+                    st.markdown(f"- {quality}")
+            
+            if "bad_qualities" in analysis.discussion_points:
+                st.markdown("**⚠️ Limitations:**")
+                for quality in analysis.discussion_points["bad_qualities"]:
+                    st.markdown(f"- {quality}")
+        else:
+            st.info("No discussion points were extracted.")
+            
+    # Save analysis button
+    st.markdown("---")
+    if st.button("💾 Save Analysis to File", help="Save the analysis as a JSON file"):
+        try:
+            output_path = Path(output_dir)
+            analysis_file = output_path / f"{pdf_name}_article_analysis.json"
+            
+            # Add timestamp to the analysis before saving
+            analysis_dict = analysis.model_dump()
+            analysis_dict["timestamp_created"] = datetime.datetime.now().isoformat()
+            
+            with open(analysis_file, 'w', encoding='utf-8') as f:
+                # Save with timestamp included
+                json.dump(analysis_dict, f, indent=4, ensure_ascii=False)
+                
+            st.success(f"✅ Analysis saved to `{analysis_file}`")
+            
+            # Provide download button for the saved file
+            with open(analysis_file, 'r', encoding='utf-8') as f:
+                st.download_button(
+                    label="📥 Download Analysis JSON",
+                    data=f.read(),
+                    file_name=f"{pdf_name}_article_analysis.json",
+                    mime="application/json"
+                )
+        except Exception as e:
+            st.error(f"Error saving analysis: {e}")
+
+def generate_new_analysis(output_dir: str, pdf_name: str, analysis_key: str):
+    """
+    Generate new AI analysis for the article.
+    
+    Args:
+        output_dir: Path to the output directory.
+        pdf_name: Name of the PDF file.
+        analysis_key: Key for session state.
+    """
+    st.info("🚀 Generating new AI analysis... This may take a moment.")
+    
+    # Find the enhanced markdown file to verify it exists
+    output_path = Path(output_dir)
+    md_file = next(output_path.glob("*_enhanced.md"), None)
+
+    if not md_file:
+        st.error("Could not find the enhanced markdown file for analysis.")
+        logger.error(f"Enhanced markdown file not found in {output_dir}")
+        return
+
+    try:
+        logger.info(f"Starting AI analysis for output directory: {output_dir}")
+        
+        with st.spinner("🤖 AI is analyzing the article... Please wait."):
+            # Call the V2 summary agent with the output folder path
+            analysis_result = process_medical_article_v2(output_dir)
+        
+        if analysis_result:
+            # Store result in session state
+            st.session_state[analysis_key] = analysis_result
+            st.success("✅ AI analysis complete!")
+            st.rerun()
+        else:
+            st.error("✗ Failed to generate AI analysis.")
+            
+    except Exception as e:
+        st.error(f"An error occurred during analysis: {e}")
+        logger.error(f"Error during AI analysis generation: {e}")
 
 def main() -> None:
     """

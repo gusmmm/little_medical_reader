@@ -7,6 +7,7 @@ import streamlit as st
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 import json
+import datetime
 
 # Load environment variables from .env file
 load_dotenv()
@@ -653,6 +654,7 @@ def save_concepts_to_json(extraction_result: MedicalConceptsExtraction, original
         
         # Create enhanced JSON structure with medical metadata
         enhanced_data = {
+            "timestamp_created": datetime.datetime.now().isoformat(),
             "extraction_metadata": {
                 "source_file": original_filename,
                 "total_concepts": extraction_result.total_concepts,
