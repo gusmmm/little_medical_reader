@@ -287,7 +287,7 @@ def display_processing_results(output_dir: str, pdf_name: str):
         return
     
     # Create tabs for different content types
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📄 Markdown Files", "🖼️ Extracted Images", "📊 Tables", "🤖 AI Summary", "📁 All Files"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📄 Markdown Files", "🖼️ Extracted Images", "📊 Tables", "🤖 AI Summary", "📊 NLP Analysis", "📁 All Files"])
     
     with tab1:
         st.markdown("### 📄 Generated Markdown Files")
@@ -803,7 +803,11 @@ def display_processing_results(output_dir: str, pdf_name: str):
                     generate_new_analysis(output_dir, pdf_name, analysis_key)
     
     with tab5:
-        st.markdown("### 📁 All Generated Files")
+        st.markdown("### � NLP Analysis")
+        st.info("NLP analysis will be shown here")
+
+    with tab6:
+        st.markdown("### �📁 All Generated Files")
         
         # Show directory structure
         st.markdown("#### 📂 Directory Structure")
