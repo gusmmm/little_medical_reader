@@ -1,38 +1,69 @@
-# Little Medical Reader
+# Little Medical Reader V2
 
-This app helps you read your patient's notes by converting the content to a visual format after extracting the data, and provides AI-powered intelligent summarization and medical concepts extraction for healthcare professionals.
+A comprehensive medical document processing and analysis tool that converts medical journal articles and patient notes into structured, analyzable formats with AI-powered insights and natural language processing capabilities.
 
 ## Features
 
-The Little Medical Reader is designed to work with patient notes in three formats:
-- **PDF** - The app will convert it to markdown with structure preservation
-- **Markdown** - Direct processing and analysis
+The Little Medical Reader V2 is designed to work with medical documents in multiple formats:
+- **PDF** - Advanced processing with Docling for superior structure preservation, table extraction, and image handling
+- **Markdown** - Direct processing and analysis with enhanced medical structure detection
 - **Text** - Direct processing and analysis
 
-The app features a graphical interface built with Streamlit, AI-powered document analysis using Google Gemini 2.0-flash, comprehensive medical concepts extraction for knowledge graphs, and detailed logging throughout the processing pipeline.
+The V2 app features a modern six-tab interface built with Streamlit, AI-powered document analysis using Google Gemini 2.0-flash, comprehensive NLP analysis with visualization, and comprehensive medical journal article processing with Docling technology.
 
-## Current Implementation
+## Current Implementation - V2 Features
 
-The current version of the app includes:
+The V2 version includes major enhancements over the original implementation:
 
-### ✅ Implemented Features
+### ✅ V2 Enhanced Features
 
-#### Core Document Processing
-- **PDF Upload Interface**: Upload PDF medical documents through a user-friendly Streamlit interface
-- **Advanced PDF Processing**: Extract PDF content to markdown using PyMuPDF with structure preservation, including:
-  - Table of contents extraction and navigation
-  - Font size analysis for heading hierarchy detection
-  - Text block organization and paragraph detection
-  - List item identification and formatting
-- **PDF Page Extraction**: Extract all pages from PDF files as images using pdfplumber for visual inspection
-- **Session State Management**: Maintain extracted pages and converted content in session state for persistent viewing
+#### Advanced PDF Processing with Docling
+- **Docling Integration**: State-of-the-art PDF processing using Docling technology for superior structure preservation
+- **Enhanced Table Extraction**: Automatic detection and conversion of tables to markdown format with visual table images
+- **Superior Image Handling**: Extraction of page images, figure images, and other visual elements with organized classification
+- **Medical Journal Optimization**: Specialized processing for medical journal articles with section-aware formatting
+- **Enhanced Markdown Generation**: Creates both base and enhanced markdown versions with improved medical structure
+- **Hierarchical Content**: Automatic detection and formatting of medical sections (Abstract, Introduction, Methods, Results, Discussion, Conclusion)
 
-#### AI-Powered Analysis & Summarization
-- **Document Type Detection**: Intelligent classification of medical documents (journal articles, discharge summaries, clinical notes, lab results, etc.)
-- **Adaptive AI Summarization**: Generate structured summaries tailored to document type and target audience using Google Gemini 2.0-flash
-- **Medical Specialty Recognition**: Automatically identify relevant medical specialties and adjust summary focus accordingly
-- **Multiple Summary Templates**: Different summary structures for research articles, clinical documents, and case reports
-- **Fallback Analysis**: Keyword-based document classification when AI analysis is unavailable
+#### Comprehensive Six-Tab Interface
+- **📄 Markdown Files**: View and download generated markdown content with structure preservation
+- **🖼️ Extracted Images**: Browse page images, figure images, and other visual elements with full-size viewing and download options
+- **📊 Tables**: View extracted tables with enhanced visualization and individual download capabilities
+- **🤖 AI Summary**: Generate comprehensive AI-powered article analysis with structured academic formatting
+- **📊 NLP Analysis**: Perform advanced natural language processing with visualizations and metrics
+- **📁 All Files**: Complete file management with directory structure visualization and bulk download options
+
+#### Advanced NLP Analysis & Visualization
+- **Medical NLP Engine**: Comprehensive natural language processing specifically designed for medical documents
+- **Text Preprocessing**: Advanced text cleaning with medical-specific stop words and reference removal
+- **Meaningful Word Extraction**: Intelligent identification of medically relevant terms with frequency analysis
+- **Collocation Analysis**: Detection of bigrams and trigrams for medical term relationships
+- **Medical Term Recognition**: Specialized extraction of medical terminology with pattern matching
+- **Sentiment Analysis**: Medical document sentiment scoring using VADER lexicon
+- **Readability Metrics**: Calculation of text complexity and readability scores for medical content
+- **Rich Visualizations**: Generation of word clouds, frequency charts, collocation networks, and medical term analysis
+- **Export Capabilities**: Complete NLP results in JSON, CSV, and visualization formats
+
+#### Enhanced AI-Powered Analysis & Summarization
+- **V2 Summary Agent**: Advanced medical article analysis with structured data extraction
+- **Citation Information Extraction**: Automatic detection of title, authors, journal, DOI, and publication date
+- **Abstract Processing**: Intelligent keyword extraction and summary generation from abstracts
+- **Methodology Analysis**: Structured extraction of research methods and experimental design
+- **Results Interpretation**: Comprehensive analysis of study findings and statistical results
+- **Discussion Evaluation**: Assessment of study strengths, limitations, and clinical implications
+- **Research Questions**: Generation of relevant follow-up questions based on article content
+- **Curiosity Points**: Identification of interesting aspects for further investigation
+- **Academic Formatting**: Professional presentation of analysis results in tabbed interface
+- **Persistent Analysis**: Save and reload analysis results with JSON export capabilities
+
+#### Medical Document Processing Excellence
+- **Smart File Management**: Automatic organization of output files with collision detection and overwrite protection
+- **Progress Tracking**: Real-time progress indicators for all processing stages with background continuation
+- **Session Persistence**: Maintain processing state across tab navigation and browser sessions
+- **Error Recovery**: Robust error handling with detailed logging and user-friendly error messages
+- **Bulk Operations**: Download all generated files as organized ZIP archives
+- **File Type Recognition**: Intelligent detection and appropriate handling of different file types
+- **Output Organization**: Structured output directories with separate folders for images, tables, and analysis results
 
 #### Medical Concepts Extraction & Knowledge Graphs
 - **Advanced Medical Concepts Extraction**: AI-powered identification of medical concepts according to four specific categories:
@@ -54,32 +85,60 @@ The current version of the app includes:
 - **Progress Tracking**: Real-time progress indicators with persistent processing that continues even when switching tabs
 - **Clinical Metadata**: Rich metadata including medical specialties, clinical significance levels, and relationship strengths
 
-#### User Interface & Experience
-- **Tabbed Interface**: Three dedicated tabs for different analysis types:
-  - **Original Content**: View converted markdown with download options
-  - **AI Summary**: Generate and view intelligent medical summaries
-  - **Medical Concepts**: Extract and explore medical concepts with relationships
-- **Interactive Analysis Generation**: On-demand AI processing with comprehensive progress indicators
-- **Dual Content Display**: View both visual pages (images) and converted text content (markdown) side by side
-- **Document Analysis Display**: Show detected document type, medical specialty, and analysis metadata
-- **Comprehensive Download Options**: Download markdown files, AI summaries, and medical concepts JSON
-- **Responsive Layout**: Optimized two-column layout for medical document review
-- **Real-time Progress Tracking**: Visual progress bars and status updates during AI processing
+#### Advanced User Interface & Experience
+- **Modern Six-Tab Design**: Comprehensive interface with dedicated tabs for different analysis types:
+  - **Markdown Files**: View generated markdown with preview and full content display
+  - **Extracted Images**: Visual content browser with pagination, full-size viewing, and download options
+  - **Tables**: Interactive table viewer with individual access and bulk download capabilities  
+  - **AI Summary**: Professional academic analysis presentation with citation information
+  - **NLP Analysis**: Comprehensive linguistic analysis with metrics and visualizations
+  - **All Files**: Complete file management with directory tree visualization and bulk operations
+- **Interactive Analysis Generation**: On-demand processing with comprehensive progress indicators and background processing
+- **Enhanced Download Options**: Individual file downloads and bulk ZIP creation for all content types
+- **Visual Content Management**: Organized display of page images, figures, and tables with interactive controls
+- **Real-time Processing Status**: Live progress tracking with ability to navigate between tabs during processing
+- **Session State Management**: Persistent storage of all processing results across browser sessions
 
-#### Technical Infrastructure
+#### Enhanced Technical Infrastructure
+- **Smart Entry Point**: Intelligent application launcher (`main.py`) with automatic port detection and conflict resolution (8501-8510)
+- **Port Conflict Management**: Socket-based port availability checking with graceful fallback and user notification
 - **Comprehensive Logging**: Detailed logging system throughout all processing stages for debugging and monitoring
 - **Robust Error Handling**: Graceful error handling with user-friendly messages and fallback mechanisms
-- **Progress Persistence**: Background processing that continues even when users navigate between tabs
-- **API Integration**: Secure integration with Google Gemini AI for document analysis, summarization, and concept extraction
-- **Modular Architecture**: Clean separation between PDF processing, AI agents, and UI components
+- **Background Processing**: Continue processing while navigating between tabs with persistent progress tracking
+- **API Integration**: Secure integration with Google Gemini AI for document analysis and summarization
+- **Modular Architecture**: Clean separation between PDF processing, AI agents, NLP analysis, and UI components
+- **Performance Optimization**: Efficient processing with caching and progressive loading for large documents
+- **Dependency Management**: Complete dependency resolution with uv package manager integration
+- **Application Lifecycle**: Proper startup, shutdown, and error recovery with keyboard interrupt handling
 
-### 🚧 Planned Features
+### 🆕 V2 New Capabilities
+
+#### Docling-Powered PDF Processing
+- **Superior Structure Preservation**: Advanced document layout analysis with section hierarchy detection
+- **Professional Table Extraction**: Convert complex tables to markdown while maintaining visual table images
+- **Enhanced Image Classification**: Automatic categorization of page images, figures, and other visual elements
+- **Medical Journal Optimization**: Specialized formatting for academic and clinical document standards
+
+#### Natural Language Processing Suite
+- **Medical Text Analysis**: Comprehensive NLP pipeline designed specifically for medical content
+- **Visualization Dashboard**: Interactive charts and graphs for linguistic analysis results
+- **Term Relationship Mapping**: Analysis of medical term collocations and semantic relationships
+- **Export-Ready Results**: Complete NLP analysis in multiple formats for further research
+
+#### File Management Excellence
+- **Intelligent Organization**: Automatic creation of structured output directories with logical file organization
+- **Bulk Operations**: ZIP file creation for easy download and sharing of all generated content
+- **Version Control**: Smart handling of file conflicts with user-controlled overwrite options
+- **Cross-Session Persistence**: Maintain processing results across application restarts
+
+### 🚧 Future Enhancements
+- **Medical Concepts Extraction**: Integration of advanced medical concept extraction for knowledge graphs (from V1)
 - **Multi-format Support**: Direct upload and processing of Markdown and Text files
 - **Local AI Models**: Integration with Ollama for offline AI processing capabilities
-- **Advanced Analytics**: Enhanced document analytics and insight extraction
 - **Workflow Chains**: LangChain integration for complex document processing workflows
 - **Collaboration Features**: Multi-user document review and annotation capabilities
 - **Neo4j Integration**: Direct import capabilities for medical knowledge graphs
+- **Advanced Analytics**: Enhanced document analytics and insight extraction
 
 ## Installation
 
@@ -104,12 +163,16 @@ uv sync
 ```
 
 This will install all required dependencies including:
-- `streamlit` - Web framework for the UI
-- `pdfplumber` - PDF processing and image extraction
-- `pymupdf` - Advanced PDF text extraction and markdown conversion
-- `google-genai` - Google Gemini AI integration for analysis and concept extraction
-- `pydantic` - Data validation for structured AI outputs
-- `python-dotenv` - Environment variable management
+- `streamlit` - Web framework for the modern six-tab UI interface
+- `docling` - Advanced PDF processing with superior structure preservation and table extraction
+- `pdfplumber` - PDF image extraction and visual content processing
+- `google-genai` - Google Gemini AI integration for document analysis and summarization
+- `nltk` - Natural language processing toolkit for medical text analysis
+- `matplotlib`, `seaborn`, `wordcloud` - Visualization libraries for NLP analysis results
+- `pandas` - Data manipulation and analysis for NLP metrics
+- `networkx` - Network analysis for term relationship visualization
+- `pydantic` - Data validation for structured AI outputs and clinical data models
+- `python-dotenv` - Environment variable management for secure API key handling
 
 3. Set up environment variables:
 Create a `.env` file in the project root:
@@ -119,148 +182,278 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ## Running the Application
 
-### Start the Streamlit App
+### Start the V2 Application
 
-To run the Streamlit application using uv:
+To run the Little Medical Reader V2 using the smart entry point:
 
 ```bash
-uv run streamlit run UI/main.py
+uv run main.py
 ```
 
-The app will start on `http://localhost:8501` by default.
+This will automatically:
+- Launch the V2 Streamlit application with advanced features
+- Find an available port (starting from 8501, scanning up to 8510 if needed)
+- Display the exact URL where the app is accessible
+- Handle port conflicts gracefully with automatic fallback
+- Provide comprehensive error handling and logging
 
-### Alternative Method
+The app will start and display something like:
+```
+🏥 Welcome to Little Medical Reader V2!
+📄 Advanced PDF processing for medical journal articles
+--------------------------------------------------
+🚀 Launching Little Medical Reader V2...
+🌐 App will be available at: http://localhost:8501
+```
 
-You can also activate the virtual environment and run streamlit directly:
+If port 8501 is busy, you'll see:
+```
+🏥 Welcome to Little Medical Reader V2!
+📄 Advanced PDF processing for medical journal articles
+--------------------------------------------------
+🚀 Launching Little Medical Reader V2...
+ℹ️  Port 8501 is busy, using port 8502 instead
+🌐 App will be available at: http://localhost:8502
+```
+
+### Alternative Methods
+
+You can also run the application directly (though the main entry point is recommended):
+
+```bash
+uv run streamlit run V2/main.py
+```
+
+Or activate the virtual environment and run manually:
 
 ```bash
 uv shell
-streamlit run UI/main.py
+streamlit run V2/main.py
 ```
+
+**Note**: The main entry point (`uv run main.py`) is strongly recommended as it includes:
+- Automatic port conflict detection and resolution
+- Comprehensive error handling and user-friendly messages
+- Proper logging and debugging information
+- Graceful shutdown handling
+- Smart fallback mechanisms for robust application startup
 
 ## Usage
 
-### Basic Workflow
+### V2 Workflow Overview
 
-1. **Upload a PDF**: Use the file uploader in the left column to select a PDF medical document
-2. **Automatic Processing**: The app will automatically:
-   - Extract all pages as images for visual inspection
-   - Convert the PDF content to structured markdown format
-   - Analyze document structure and preserve hierarchical elements
-3. **View Content**: 
-   - **Left Column**: Browse through extracted page images with adjustable zoom
-   - **Right Column**: Access three analysis tabs for different types of content analysis
+1. **Launch the Application**: Run `uv run main.py` to start the V2 interface with smart port management
+2. **Upload Medical PDF**: Use the file uploader to select a medical journal article or document
+3. **Automatic Processing**: The app will process your document using advanced Docling technology
+4. **Explore Six Analysis Tabs**: Navigate through different types of analysis and content
+5. **Download Results**: Save processed content, analysis results, and visualizations
 
-### Three-Tab Analysis System
+The V2 application automatically handles:
+- **Port Management**: Finds available ports (8501-8510) and handles conflicts gracefully
+- **Error Recovery**: Comprehensive error handling with user-friendly messages
+- **Background Processing**: Continue working while analysis runs in the background
+- **Session Persistence**: Maintains state across browser sessions and tab navigation
+- **Smart Logging**: Detailed logs for debugging and monitoring application performance
 
-#### 📄 Original Content Tab
-- View the converted markdown content in a scrollable container
-- Download the structured markdown file for offline use
-- Review the document structure and formatting preservation
+### Six-Tab Analysis System
+
+The V2 interface provides comprehensive analysis through six dedicated tabs:
+
+#### 📄 Markdown Files Tab
+- **View Generated Content**: Browse both base and enhanced markdown versions of your document
+- **Structure Preservation**: See how the document structure is maintained with proper medical section formatting
+- **Content Preview**: Get a quick preview of the content before viewing the full document
+- **Download Options**: Save markdown files for offline use or further processing
+- **Medical Formatting**: Enhanced formatting specific to medical journal articles and clinical documents
+
+#### 🖼️ Extracted Images Tab
+- **Organized Visual Content**: Browse page images, figure images, and other visual elements in organized categories
+- **Pagination Support**: Navigate through large numbers of images with user-friendly pagination
+- **Full-Size Viewing**: Click to view any image in full resolution with expandable containers
+- **Individual Downloads**: Save specific images with dedicated download buttons
+- **Image Classification**: Automatic categorization of different image types for easy navigation
+- **Interactive Controls**: Zoom, download, and organize your visual content efficiently
+
+#### 📊 Tables Tab  
+- **Extracted Table Display**: View all tables extracted from your document with enhanced visibility
+- **Interactive Table Viewer**: See tables in medium resolution with options to view full-size versions
+- **Individual Table Access**: Download specific tables as needed for your research
+- **Bulk Table Downloads**: Create ZIP files containing all extracted tables
+- **Table Classification**: Organized display with proper table numbering and identification
 
 #### 🤖 AI Summary Tab
-- **Generate AI Summary**: Click to create an intelligent analysis of your document
-- **Document Analysis**: View automatic detection of:
-  - Document type (journal article, clinical note, discharge summary, etc.)
-  - Medical specialty (cardiology, neurology, oncology, etc.)
-  - Complexity level and target audience
-- **Adaptive Summaries**: Receive structured summaries tailored to document type:
-  - Research articles: Study overview, methodology, key findings, clinical implications
-  - Clinical documents: Patient information, key findings, treatment plans, follow-up requirements
-  - Case reports: Case presentation, clinical course, outcomes, learning points
-- **Download Options**: Save AI-generated summaries as markdown files
+- **Comprehensive Analysis**: Generate detailed AI-powered analysis using Google Gemini 2.0-flash
+- **Academic Structure**: Professional presentation with citation information, methodology, results, and conclusions
+- **Tabbed Organization**: Navigate through Summary & Keywords, Methodology & Results, Conclusions, and Discussion sections
+- **Citation Extraction**: Automatic detection of title, authors, journal, DOI, and publication information
+- **Research Insights**: Generate relevant questions and identify curiosities for further investigation
+- **Export Capabilities**: Save complete analysis as structured JSON files for further use
 
-#### 🧠 Medical Concepts Tab
-- **Extract Medical Concepts**: Click to analyze your document for medical concepts and relationships
-- **Progress Tracking**: Real-time progress indicators with the ability to safely navigate between tabs
-- **Comprehensive Analysis**: View extracted concepts organized by:
-  - **Medical Concept Types**: Individual, qualitative, comparative, quantitative
-  - **Medical Categories**: Diseases, medications, symptoms, procedures, lab values, etc.
-  - **Clinical Relationships**: How concepts relate to each other with strength scores
-  - **Medical Specialties**: Relevant healthcare domains identified
-- **Intelligent Filtering**: Automatically selects the 50 most relevant concepts based on clinical importance
-- **Neo4j Export**: Download structured JSON data ready for medical knowledge graph creation
+#### 📊 NLP Analysis Tab
+- **Advanced Text Processing**: Comprehensive natural language processing specifically designed for medical content using NLTK
+- **Medical-Specific Analysis**: Specialized preprocessing with medical stop words, reference removal, and clinical terminology recognition
+- **Linguistic Metrics**: Calculate readability scores, lexical diversity, sentiment analysis, and comprehensive text statistics
+- **Medical Term Extraction**: Identify and analyze medical terminology with frequency analysis and pattern recognition
+- **Visualization Dashboard**: Interactive charts including word clouds, frequency distributions, collocation networks, and medical term analysis
+- **Term Relationships**: Analyze bigrams, trigrams, and medical term collocations with network visualization
+- **Export Options**: Download complete NLP results as JSON, CSV, and high-quality PNG visualizations
+- **Background Processing**: Real-time processing indicators with background continuation capability and session persistence
+- **Quality Metrics**: Comprehensive analysis including sentiment analysis, readability scores, and lexical diversity measurements
 
-### Advanced AI Features
+#### 📁 All Files Tab
+- **Complete File Management**: View the entire directory structure of generated content
+- **Directory Tree Visualization**: Navigate through organized folder structures with visual representations
+- **Bulk Download Operations**: Create and download ZIP files containing all generated content
+- **File Organization**: See how content is automatically organized into logical folder structures
+- **Storage Management**: Monitor file sizes and manage your generated content efficiently
 
-#### Medical Concepts Extraction
-The AI system identifies and categorizes medical concepts according to a clinically-relevant taxonomy:
+### Advanced V2 Features
 
-**Concept Types:**
-- **Individual**: Specific entities (e.g., "acute myocardial infarction", "metformin 500mg")
-- **Qualitative**: Classifications (e.g., "hypertension", "positive blood culture")
-- **Comparative**: Comparisons (e.g., "worse than yesterday", "above normal range")
-- **Quantitative**: Measurements (e.g., "blood pressure 140/90 mmHg", "hemoglobin 8.2 g/dL")
+#### Docling-Powered PDF Processing
+The V2 version uses state-of-the-art Docling technology for superior PDF processing:
 
-**Clinical Relationships:**
-- Treatment relationships: treats, improves, worsens
-- Causal relationships: causes, influences
-- Diagnostic relationships: indicates, measures, diagnoses
-- Structural relationships: is_part_of, associated_with
+**Enhanced Structure Preservation:**
+- Automatic detection of medical journal sections (Abstract, Introduction, Methods, Results, Discussion, Conclusion)
+- Hierarchical heading structure with proper markdown formatting
+- Preservation of complex document layouts and formatting
+- Intelligent paragraph and list detection with medical context awareness
 
-#### Intelligent Relevance Filtering
-The system automatically prioritizes concepts using a sophisticated scoring algorithm that considers:
-- **Frequency in text** (30%): How often the concept appears
-- **Clinical significance** (25%): Medical importance level
-- **AI confidence** (20%): Extraction confidence score
-- **Concept type priority** (15%): Clinical value of concept type
-- **Category priority** (10%): Medical category importance
+**Advanced Table Processing:**
+- Automatic table detection and extraction with visual preservation
+- Conversion to structured markdown format while maintaining table images
+- Individual table access and download capabilities
+- Proper table numbering and organization for research use
 
-### Session Persistence
+**Superior Image Handling:**
+- Classification of page images, figure images, and other visual content
+- High-quality image extraction with organized folder structure
+- Interactive viewing with full-size expansion capabilities
+- Bulk download options for efficient content management
 
-Your processed content remains available during your session, allowing you to:
-- Switch between original content, AI summaries, and medical concepts
-- Navigate away from processing tabs while AI work continues in background
-- Regenerate summaries or concepts with different focus
-- Download multiple versions of processed documents
+#### Natural Language Processing Excellence
+The integrated NLP analysis provides comprehensive linguistic insights using the advanced `MedicalNLPAnalyzer`:
+
+**Medical Text Analysis:**
+- Specialized preprocessing for medical documents with intelligent reference removal and medical terminology preservation
+- Medical-specific stop word filtering with clinical terminology recognition and pattern matching
+- Advanced lemmatization and tokenization optimized for clinical content and academic medical writing
+- Intelligent meaningful word extraction with frequency analysis and medical relevance scoring
+- Named Entity Recognition (NER) for medical entities and relationships
+
+**Visualization and Metrics:**
+- Professional word clouds and frequency distribution charts with medical-optimized styling
+- Collocation network analysis for term relationships and semantic connections
+- Medical term frequency analysis with specialized pattern recognition and clinical relevance scoring  
+- Readability metrics (Flesch-like scoring) and sentiment analysis specifically tuned for medical content
+- Comprehensive text quality metrics including lexical diversity, sentence complexity, and vocabulary richness
+
+**Export and Integration:**
+- Complete results in structured JSON format for further analysis and research integration
+- CSV export for spreadsheet compatibility and statistical analysis
+- High-quality PNG visualizations (300 DPI) for presentations, reports, and publications
+- Organized ZIP archives for easy sharing, archival, and collaborative research workflows
+- Background processing with session persistence for large document analysis
+
+### Session Persistence and Performance
+
+**Background Processing:**
+- Continue analysis while navigating between tabs
+- Persistent session state across browser refreshes
+- Intelligent caching of processing results for quick access
+- Real-time progress indicators with detailed status updates
+
+**File Management:**
+- Automatic organization of output files in logical directory structures
+- Smart collision detection with user-controlled overwrite options
+- Complete file history and version tracking
+- Efficient storage management with cleanup options
+
+**Performance Optimization:**
+- Progressive loading for large documents
+- Efficient memory management for processing large PDFs
+- Optimized image handling and display
+- Background processing that doesn't block user interface interactions
 
 ## Project Structure
 
 ```
 little_medical_reader/
-├── UI/
+├── main.py                  # Smart entry point with port management and error handling
+├── V2/
 │   ├── __init__.py
-│   └── main.py              # Streamlit app with integrated AI analysis and concepts extraction
+│   └── main.py              # V2 Streamlit app with six-tab interface and advanced features
 ├── file_processor/
 │   ├── __init__.py
-│   └── pdf_processor.py     # Advanced PDF processing with structure preservation
+│   ├── pdf_processor.py     # Original PDF processing (V1)
+│   └── advanced_pdf_processor.py  # Docling-powered PDF processing for V2
 ├── agents/
 │   ├── __init__.py
-│   ├── summary_agent.py     # AI-powered document analysis and summarization
-│   └── concepts_agent.py    # Medical concepts extraction for knowledge graphs
-├── output/                  # Generated files (created automatically)
-│   ├── *.md                 # Converted markdown files
-│   ├── *_AI_summary.md      # AI-generated summaries
-│   └── *_medical_concepts.json # Medical concepts for Neo4j import
-├── logs/                    # Application logs (created automatically)
-├── .env                     # Environment variables (create manually)
-├── main.py                  # Project entry point
-├── pyproject.toml           # Project dependencies and metadata
-├── uv.lock                  # Dependency lock file
-├── README.md                # This file
-└── LICENSE                  # Project license
+│   ├── summary_agent.py     # V1 AI-powered document analysis and summarization
+│   ├── concepts_agent.py    # Medical concepts extraction for knowledge graphs (V1)
+│   └── V2_summary_agent.py  # Enhanced V2 AI analysis with structured academic formatting
+├── NLP/
+│   ├── __init__.py
+│   ├── basic_nlp.py        # Basic NLP functionality (V1)
+│   ├── advanced_nlp.py     # Advanced NLP processing (V1)
+│   └── V2/
+│       ├── __init__.py
+│       └── nlp.py          # Comprehensive medical NLP analyzer for V2
+├── UI/                     # Original V1 interface (legacy)
+│   ├── __init__.py
+│   └── main.py            # V1 Streamlit app with three-tab interface
+├── output/                 # Generated files (created automatically)
+│   ├── <document_name>/   # Individual document folders with organized content
+│   │   ├── *.md          # Base and enhanced markdown files
+│   │   ├── *_article_analysis.json  # AI analysis results
+│   │   ├── images/       # Page images, figures, and other visual content
+│   │   ├── tables/       # Extracted table images
+│   │   └── nlp/          # NLP analysis results with visualizations
+│   └── docling_md/       # Legacy output directory
+├── input/                 # Input files directory (created automatically)
+├── logs/                  # Application logs (created automatically)
+├── .env                   # Environment variables (create manually)
+├── main.py               # V2 application entry point with smart port management
+├── pyproject.toml        # Project dependencies and metadata with V2 requirements
+├── uv.lock              # Dependency lock file
+├── README.md            # This file - V2 documentation
+└── LICENSE              # Project license
 ```
 
 ## Development
 
-The app is structured with clear separation of concerns:
-- **UI Layer**: Streamlit-based interface with integrated AI features and tabbed navigation
-- **Processing Layer**: Advanced PDF and document processing in the `file_processor/` folder
-- **AI Layer**: Document analysis, summarization, and medical concepts extraction in the `agents/` folder
-- **Output Management**: Automatic file organization with structured JSON for knowledge graphs
-- **Logging**: Comprehensive logging system for debugging and monitoring
+The V2 app architecture provides enhanced separation of concerns:
+
+- **V2 UI Layer**: Modern six-tab Streamlit interface with advanced document processing and analysis capabilities
+- **Advanced Processing Layer**: Docling-powered PDF processing with superior structure preservation and content extraction
+- **Enhanced AI Layer**: V2 summary agent with structured academic analysis and comprehensive result formatting  
+- **NLP Analysis Layer**: Comprehensive medical natural language processing with visualization and export capabilities
+- **File Management Layer**: Intelligent organization with automatic directory structures and bulk operations
+- **Legacy Support**: V1 components maintained for backward compatibility and feature migration
+
+### V2 Architecture Improvements
+
+- **Modular Design**: Clean separation between processing, analysis, and presentation layers
+- **Background Processing**: Non-blocking operations that continue while users navigate between tabs
+- **Session Management**: Persistent state management across browser sessions and application restarts
+- **Error Recovery**: Comprehensive error handling with graceful degradation and user feedback
+- **Performance Optimization**: Efficient processing with caching and progressive loading for large documents
+- **Export Systems**: Multiple export formats with organized file structures for research and sharing
 
 ## Technology Stack
 
-- **Backend**: Python 3.12+
-- **UI Framework**: Streamlit with three-tab interface for different analysis types
-- **PDF Processing**: pdfplumber (images), PyMuPDF (advanced text extraction)
-- **AI Integration**: Google Gemini 2.0-flash for document analysis, summarization, and medical concepts extraction
+- **Backend**: Python 3.12+ with comprehensive medical document processing capabilities
+- **UI Framework**: Streamlit with modern six-tab interface for comprehensive document analysis
+- **Advanced PDF Processing**: Docling integration for superior structure preservation, table extraction, and content organization
+- **Legacy PDF Processing**: PyMuPDF and pdfplumber for compatibility and image extraction
+- **AI Integration**: Google Gemini 2.0-flash for document analysis, academic summarization, and structured content extraction
+- **NLP Processing**: NLTK ecosystem with medical-specific enhancements for comprehensive text analysis
+- **Data Visualization**: Matplotlib, Seaborn, WordCloud, and NetworkX for rich NLP analysis visualizations
+- **Data Management**: Pandas for data manipulation and analysis with CSV export capabilities
 - **Data Validation**: Pydantic v2 for structured AI outputs and clinical data models
-- **Package Management**: uv for fast dependency management
-- **Environment Management**: python-dotenv for secure API key handling
-- **Knowledge Graphs**: JSON export optimized for Neo4j medical knowledge graph creation
-- **Future Integrations**: LangChain (planned), Ollama (planned)
+- **Package Management**: uv for fast dependency management and development workflow
+- **Environment Management**: python-dotenv for secure API key handling and configuration
+- **Export Capabilities**: JSON, CSV, PNG, and ZIP formats for research and sharing
+- **Future Integrations**: LangChain (planned), Ollama (planned), Neo4j medical knowledge graphs (planned)
 
 ## Configuration
 
@@ -279,13 +472,14 @@ LOG_FILE=logs/app.log
 
 ### Logging
 
-The application provides comprehensive logging across all modules:
-- **PDF Processing**: Track extraction progress and identify processing issues
-- **AI Analysis**: Monitor document classification, summary generation, and concept extraction
-- **Concept Filtering**: Log relevance scoring and filtering decisions
-- **Progress Tracking**: Monitor AI processing progress and user interactions
-- **Error Handling**: Detailed error logging with context for troubleshooting
-- **Performance**: Track processing times and resource usage
+The application provides comprehensive logging across all V2 modules:
+- **PDF Processing**: Track Docling processing progress and advanced content extraction
+- **AI Analysis**: Monitor V2 summary agent processing with structured academic analysis
+- **NLP Processing**: Detailed logging of medical text analysis with metrics and visualization generation
+- **File Management**: Track automatic organization and bulk operations
+- **Background Processing**: Monitor progress of operations that continue while navigating between tabs
+- **Error Handling**: Detailed error logging with context for troubleshooting V2 features
+- **Performance**: Track processing times and resource usage for large document processing
 
 Logs are automatically created in the `logs/` directory with timestamps and structured formatting.
 
@@ -358,33 +552,69 @@ When contributing to this project:
 
 ### Common Issues
 
-1. **AI Features Not Working**: 
-   - Ensure `GEMINI_API_KEY` is set in `.env` file
-   - Check internet connectivity for API access
-   - Verify API key has sufficient quota
+**Port Conflicts:**
+The new smart entry point automatically handles port conflicts. If you see "Port already in use" errors:
+- The application will automatically try ports 8501-8510
+- You'll see a notification showing which port is being used
+- The exact URL will be displayed in the console
 
-2. **Medical Concepts Extraction Slow**:
-   - Large documents are processed in chunks with progress tracking
-   - Processing continues in background even when switching tabs
-   - Check logs for detailed progress information
+**Application Won't Start:**
+```bash
+# Check if uv is installed
+uv --version
 
-3. **PDF Processing Errors**:
-   - Check that uploaded file is a valid PDF
-   - Ensure sufficient disk space for processing
-   - Review logs in `logs/` directory for detailed error information
+# Install dependencies
+uv sync
 
-4. **Performance Issues**:
-   - Large PDFs may take longer to process
-   - AI processing requires internet connectivity
-   - Medical concepts extraction is limited to 50 most relevant concepts for performance
+# Try running with verbose output
+uv run main.py
+```
+
+**AI Features Not Working**: 
+- Ensure `GEMINI_API_KEY` is set in `.env` file
+- Check internet connectivity for API access
+- Verify API key has sufficient quota
+
+**Medical Concepts Extraction Slow**:
+- Large documents are processed in chunks with progress tracking
+- Processing continues in background even when switching tabs
+- Check logs for detailed progress information
+
+**PDF Processing Errors**:
+- Check that uploaded file is a valid PDF
+- Ensure the PDF is not password-protected
+- Check that the file size is reasonable (< 100MB recommended)
+- Verify the PDF contains extractable text (not just scanned images)
+- Ensure sufficient disk space for processing
+- Review logs in `logs/` directory for detailed error information
+
+**NLP Analysis Errors:**
+- The application automatically downloads required NLTK data
+- Ensure sufficient disk space for visualization generation
+- Check logs in the `logs/` directory for detailed error information
+
+**Performance Issues**:
+- Large PDFs may take longer to process
+- AI processing requires internet connectivity
+- Medical concepts extraction is limited to 50 most relevant concepts for performance
 
 ### Log Analysis
 
 Check the application logs for detailed troubleshooting information:
-- Location: `logs/` directory
-- Format: Timestamped entries with module identification
-- Levels: INFO, WARNING, ERROR for different severity levels
-- Content: PDF processing, AI analysis, concept extraction, and user interactions
+- Location: `logs/` directory (created automatically)
+- Format: Timestamped entries with module identification and detailed context
+- Levels: INFO, WARNING, ERROR for different severity levels with comprehensive stack traces
+- Content: PDF processing, AI analysis, NLP processing, concept extraction, port management, and user interactions
+- Performance: Processing times, memory usage, and optimization recommendations
+
+### Entry Point Debugging
+
+The smart entry point provides comprehensive error handling:
+- **Port Discovery**: Automatic scanning and conflict resolution with detailed logging
+- **Path Validation**: Verification of V2 app location and dependency availability
+- **Error Recovery**: Graceful fallback mechanisms with user-friendly error messages
+- **Process Management**: Proper subprocess handling with cleanup on interruption
+- **Logging Integration**: Detailed startup and shutdown logging for debugging application lifecycle
 
 ## License
 
