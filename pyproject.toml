@@ -3,7 +3,7 @@ name = "lmr"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.13.4",
     "docling>=2.41.0",
@@ -24,4 +24,5 @@ dependencies = [
     "spacy>=3.7.5",
     "streamlit>=1.46.1",
     "wordcloud>=1.9.4",
+    "pandas",
 ]

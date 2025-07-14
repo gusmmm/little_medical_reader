@@ -46,6 +46,15 @@ except ImportError as e:
     logger.error(f"✗ Failed to import V2 Summary Agent: {e}")
     st.error("Failed to import V2 Summary Agent. Please check your installation.")
 
+try:
+    from NLP.V2.nlp import MedicalNLPAnalyzer
+    import pandas as pd
+    logger.info("✓ Medical NLP Analyzer imported successfully")
+except ImportError as e:
+    logger.error(f"✗ Failed to import Medical NLP Analyzer: {e}")
+    st.error("Failed to import the NLP module. Please check your installation.")
+
+
 # use pdfplumber for extracting the pdf pages as images
 @st.cache_data
 def extract_all_pages_as_images(file_path: str) -> list[Any]:
@@ -803,11 +812,44 @@ def display_processing_results(output_dir: str, pdf_name: str):
                     generate_new_analysis(output_dir, pdf_name, analysis_key)
     
     with tab5:
-        st.markdown("### � NLP Analysis")
-        st.info("NLP analysis will be shown here")
+        st.markdown("### 📊 NLP Analysis")
+        
+        nlp_key = f"nlp_analysis_{pdf_name}"
+        nlp_output_dir = Path(output_dir) / "nlp"
+        
+        if nlp_key in st.session_state:
+            display_nlp_analysis(st.session_state[nlp_key], str(nlp_output_dir))
+        else:
+            # Check if analysis folder already exists
+            if nlp_output_dir.exists() and any(nlp_output_dir.iterdir()):
+                st.info("🔍 Existing NLP analysis found!")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("📂 Load Existing NLP Analysis", help="Load the previously generated NLP analysis"):
+                        try:
+                            # Load results from JSON file
+                            json_path = nlp_output_dir / 'nlp_analysis_results.json'
+                            with open(json_path, 'r', encoding='utf-8') as f:
+                                nlp_data = json.load(f)
+                            
+                            st.session_state[nlp_key] = nlp_data
+                            st.success("✅ NLP analysis loaded successfully!")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error loading existing NLP analysis: {e}")
+                
+                with col2:
+                    if st.button("🔄 Generate New NLP Analysis", help="Generate a fresh NLP analysis"):
+                        generate_new_nlp_analysis(output_dir, pdf_name, nlp_key)
+            else:
+                st.info("🔬 Ready to perform Natural Language Processing analysis on this article.")
+                
+                if st.button("🚀 Generate NLP Analysis", help="Analyze the article's text to extract linguistic insights", type="primary"):
+                    generate_new_nlp_analysis(output_dir, pdf_name, nlp_key)
 
     with tab6:
-        st.markdown("### �📁 All Generated Files")
+        st.markdown("### 📁 All Generated Files")
         
         # Show directory structure
         st.markdown("#### 📂 Directory Structure")
@@ -869,6 +911,137 @@ def display_processing_results(output_dir: str, pdf_name: str):
             
             st.metric("Total Files", total_files)
             st.metric("Total Size", f"{size_mb:.2f} MB")
+
+def display_nlp_analysis(nlp_results: dict, nlp_output_dir: str):
+    """
+    Display the NLP analysis results in a beautiful and organized format.
+    
+    Args:
+        nlp_results: Dictionary containing the analysis results.
+        nlp_output_dir: Path to the NLP output directory.
+    """
+    st.markdown("#### 🔬 NLP Analysis Results")
+    
+    nlp_path = Path(nlp_output_dir)
+    
+    # Key metrics in columns
+    st.markdown("##### 📈 Key Metrics")
+    metrics = nlp_results.get('metrics', {})
+    if metrics:
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Lexical Diversity", f"{metrics.get('lexical_diversity', 0):.3f}")
+        with col2:
+            st.metric("Readability Score", f"{metrics.get('readability_score', 0):.1f}")
+        with col3:
+            st.metric("Sentiment (Compound)", f"{metrics.get('sentiment', {}).get('compound', 0):.3f}")
+        with col4:
+            st.metric("Meaningful Words", f"{metrics.get('meaningful_words', 0):,}")
+    
+    st.markdown("---")
+    
+    # Tabs for different visualizations
+    viz_tab1, viz_tab2, viz_tab3 = st.tabs(["🖼️ Overview", "🔑 Keywords & Terms", "🔗 Collocations"])
+    
+    with viz_tab1:
+        st.markdown("##### 📊 Analysis Overview")
+        overview_img = nlp_path / 'nlp_analysis_overview.png'
+        if overview_img.exists():
+            st.image(str(overview_img), caption="NLP Analysis Overview", use_container_width=True)
+        else:
+            st.warning("Overview visualization not found.")
+
+    with viz_tab2:
+        st.markdown("##### 🔑 Meaningful Words")
+        meaningful_words_df = pd.DataFrame(list(nlp_results.get('meaningful_words', {}).items()), columns=['Word', 'Frequency'])
+        st.dataframe(meaningful_words_df, use_container_width=True)
+
+        st.markdown("##### 🩺 Medical Terms Frequency")
+        med_terms_img = nlp_path / 'medical_terms_frequency.png'
+        if med_terms_img.exists():
+            st.image(str(med_terms_img), caption="Medical Terms Frequency", use_container_width=True)
+        else:
+            st.warning("Medical terms frequency chart not found.")
+
+    with viz_tab3:
+        st.markdown("##### 🔗 Bigram Collocations")
+        bigram_img = nlp_path / 'bigram_collocations.png'
+        if bigram_img.exists():
+            st.image(str(bigram_img), caption="Top Bigram Collocations", use_container_width=True)
+        else:
+            st.warning("Bigram collocations chart not found.")
+            
+        st.markdown("##### Top 10 Bigrams")
+        bigrams = nlp_results.get('collocations', {}).get('bigrams', [])
+        if bigrams:
+            st.text('\n'.join([f"- {' '.join(bg)}" for bg in bigrams[:10]]))
+
+    # Expander for raw data and download
+    with st.expander("📂 View Raw Data & Download"):
+        st.markdown("##### 📄 Full Analysis Summary")
+        summary_file = nlp_path / 'analysis_summary.txt'
+        if summary_file.exists():
+            with open(summary_file, 'r', encoding='utf-8') as f:
+                st.text(f.read())
+        
+        st.markdown("##### 📥 Download All NLP Results (ZIP)")
+        if st.button("📦 Download NLP ZIP", help="Download all NLP analysis files as a ZIP"):
+            try:
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.zip') as tmp_file:
+                    with zipfile.ZipFile(tmp_file.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                        for file_path in nlp_path.rglob('*'):
+                            if file_path.is_file():
+                                zipf.write(file_path, file_path.name)
+                    
+                    with open(tmp_file.name, 'rb') as f:
+                        zip_data = f.read()
+                    
+                    st.download_button(
+                        label="📥 Download NLP ZIP File",
+                        data=zip_data,
+                        file_name=f"{nlp_path.parent.name}_nlp_analysis.zip",
+                        mime="application/zip"
+                    )
+                    os.unlink(tmp_file.name)
+            except Exception as e:
+                st.error(f"Error creating NLP ZIP file: {e}")
+
+def generate_new_nlp_analysis(output_dir: str, pdf_name: str, nlp_key: str):
+    """
+    Generate new NLP analysis for the article.
+    
+    Args:
+        output_dir: Path to the main output directory.
+        pdf_name: Name of the PDF file.
+        nlp_key: Key for session state.
+    """
+    st.info("🚀 Generating new NLP analysis... This may take a moment.")
+    
+    output_path = Path(output_dir)
+    md_file = next(output_path.glob("*_enhanced.md"), None)
+
+    if not md_file:
+        st.error("Could not find the enhanced markdown file for NLP analysis.")
+        logger.error(f"Enhanced markdown file not found in {output_dir} for NLP.")
+        return
+
+    try:
+        logger.info(f"Starting NLP analysis for: {md_file}")
+        
+        with st.spinner("🔬 NLP model is analyzing the text... Please wait."):
+            analyzer = MedicalNLPAnalyzer()
+            analysis_result = analyzer.analyze_document(str(md_file), output_dir)
+        
+        if analysis_result:
+            st.session_state[nlp_key] = analysis_result
+            st.success("✅ NLP analysis complete!")
+            st.rerun()
+        else:
+            st.error("✗ Failed to generate NLP analysis.")
+            
+    except Exception as e:
+        st.error(f"An error occurred during NLP analysis: {e}")
+        logger.error(f"Error during NLP analysis generation: {e}")
 
 def display_ai_analysis(analysis: ArticleAnalysis, output_dir: str, pdf_name: str):
     """
@@ -1108,7 +1281,7 @@ def main() -> None:
         st.markdown("### 🔬 Advanced PDF Processing")
         
         # Check if we have a PDF ready for processing
-        if "current_pdf_path" in st.session_state:
+        if "current_pdf_path" in st.session_state and st.session_state["current_pdf_path"]:
             pdf_path = st.session_state["current_pdf_path"]
             pdf_name = st.session_state["current_pdf_name"]
             
@@ -1333,4 +1506,14 @@ def main() -> None:
                     st.metric("Example Tables", len(table_files))
 
 if __name__ == "__main__":
+    # Initialize session state variables
+    if "processing_output_dir" not in st.session_state:
+        st.session_state["processing_output_dir"] = None
+    if "processing_completed" not in st.session_state:
+        st.session_state["processing_completed"] = False
+    if "current_pdf_path" not in st.session_state:
+        st.session_state["current_pdf_path"] = None
+    if "current_pdf_name" not in st.session_state:
+        st.session_state["current_pdf_name"] = None
+    
     main()

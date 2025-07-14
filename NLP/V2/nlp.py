@@ -45,16 +45,10 @@ class MedicalNLPAnalyzer:
     A comprehensive NLP analyzer for medical documents using NLTK.
     """
     
-    def __init__(self, output_dir: str = "nlp_output"):
+    def __init__(self):
         """
         Initialize the NLP analyzer.
-        
-        Args:
-            output_dir: Directory to save analysis outputs
         """
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(exist_ok=True)
-        
         # Initialize NLTK components
         self._download_nltk_data()
         self.lemmatizer = WordNetLemmatizer()
@@ -70,7 +64,7 @@ class MedicalNLPAnalyzer:
         }
         self.stop_words.update(self.medical_stop_words)
         
-        logger.info(f"Initialized MedicalNLPAnalyzer with output directory: {output_dir}")
+        logger.info("Initialized MedicalNLPAnalyzer")
 
     def _download_nltk_data(self):
         """Download required NLTK data."""
@@ -493,19 +487,25 @@ class MedicalNLPAnalyzer:
             for i, bigram in enumerate(collocations['bigrams'][:10], 1):
                 f.write(f"{i:2d}. {' '.join(bigram)}\n")
         
-        logger.info("Results saved to files")
+        logger.info(f"Results saved to files")
 
-    def analyze_document(self, file_path: str) -> Dict[str, Any]:
+    def analyze_document(self, file_path: str, article_output_dir: str) -> Dict[str, Any]:
         """
         Perform complete NLP analysis on a medical document.
         
         Args:
             file_path: Path to the markdown file
+            article_output_dir: The main output directory for the article.
             
         Returns:
             Dictionary containing all analysis results
         """
         logger.info(f"Starting NLP analysis of: {file_path}")
+        
+        # Set and create the output directory for NLP results
+        self.output_dir = Path(article_output_dir) / "nlp"
+        self.output_dir.mkdir(exist_ok=True)
+        logger.info(f"NLP output will be saved to: {self.output_dir}")
         
         # Read the document
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -543,25 +543,39 @@ def main():
     """
     Main function to run the NLP analysis on the test document.
     """
-    # Initialize analyzer with output directory in project root
-    project_root = Path(__file__).parent.parent.parent  # Go up from NLP/V2/ to project root
-    output_dir = project_root / "nlp_output"
-    analyzer = MedicalNLPAnalyzer(output_dir=str(output_dir))
+    # Initialize analyzer
+    analyzer = MedicalNLPAnalyzer()
     
-    # Test document path (absolute path to ensure it works from any directory)
-    test_file = project_root / "output" / "docling_md" / "jcm-12-03188_enhanced.md"
+    # Define project paths
+    project_root = Path(__file__).parent.parent.parent
+    pdf_name = "jcm-12-03188"
+    article_output_dir = project_root / "output" / pdf_name
+    article_output_dir.mkdir(exist_ok=True)
     
+    # Define test file path, assuming it's inside the article's output directory
+    test_file = article_output_dir / f"{pdf_name}_enhanced.md"
+    
+    # For testing purposes, copy the file from its old location if it doesn't exist
+    original_test_file = project_root / "output" / "docling_md" / "jcm-12-03188_enhanced.md"
+    if not test_file.exists() and original_test_file.exists():
+        import shutil
+        logger.info(f"Copying test file from {original_test_file} to {test_file}")
+        shutil.copy(original_test_file, test_file)
+
     if not test_file.exists():
         logger.error(f"Test file not found: {test_file}")
         print(f"Error: Test file not found: {test_file}")
         return
     
-    # Run analysis
-    results = analyzer.analyze_document(str(test_file))
+    # Run analysis, providing the article's main output directory
+    results = analyzer.analyze_document(str(test_file), str(article_output_dir))
+    
+    # Get the specific NLP output path from the analyzer instance
+    nlp_output_dir = analyzer.output_dir
     
     # Print summary
     print("\n=== NLP Analysis Completed ===")
-    print(f"Output directory: {output_dir}/")
+    print(f"Output directory: {nlp_output_dir}/")
     print(f"Meaningful words found: {len(results['meaningful_words'])}")
     print(f"Bigrams found: {len(results['collocations']['bigrams'])}")
     print(f"Trigrams found: {len(results['collocations']['trigrams'])}")
