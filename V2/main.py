@@ -1422,6 +1422,14 @@ def main() -> None:
                 st.markdown("### 📋 Processing Results")
                 
                 output_dir = st.session_state["processing_output_dir"]
+                # Get pdf_name from session state, or derive it from output_dir if not available
+                if "current_pdf_name" in st.session_state and st.session_state["current_pdf_name"]:
+                    pdf_name = st.session_state["current_pdf_name"]
+                else:
+                    # Fallback: get pdf name from output directory name
+                    pdf_name = Path(output_dir).name
+                    st.session_state["current_pdf_name"] = pdf_name
+                
                 display_processing_results(output_dir, pdf_name)
         
         else:
@@ -1455,6 +1463,8 @@ def main() -> None:
                                 st.session_state["processing_output_dir"] = str(folder)
                                 st.session_state["processing_completed"] = True
                                 st.session_state["current_pdf_name"] = folder.name
+                                # Also set the current_pdf_path for consistency
+                                st.session_state["current_pdf_path"] = f"input/{folder.name}.pdf"  # Assume PDF exists
                                 st.rerun()
                     
                     if len(existing_folders) > 5:
